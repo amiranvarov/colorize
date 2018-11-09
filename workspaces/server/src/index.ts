@@ -1,1 +1,11 @@
-console.log('Hey world what aw what s awd awd a a')
+import * as dotenv from 'dotenv'
+import * as Server from './http'
+
+
+dotenv.config();
+Server.start();
+
+
+
+
+
