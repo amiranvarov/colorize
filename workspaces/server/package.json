@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "nodemon": "nodemon -w ./build/",
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon",
+    "watch": "tsc -w",
+    "dev": "concurrently --kill-others \"npm run watch\" \"npm run nodemon\" ",
+    "start": "npm run build && node ./build/index.js ",
     "build": "rm -rf build && tsc",
     "start:prod": "node ./build/index.js"
   },
