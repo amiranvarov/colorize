@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "watch": ["src"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "build",
+    "sourceMap": true,
+    "declaration": false,
+    "target": "es5",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "rootDir": "src",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "es2017",
+      "es2015",
+      "dom"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

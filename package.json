@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "license": "UNLICENSED",
+  "name": "colorize",
+  "version": "0.1.0",
+  "description": "",
+  "engines": {
+    "node": "10.8.0"
+  },
+  "workspaces": {
+    "packages": [
+      "workspaces/*"
+    ]
+  },
+  "scripts": {
+    "heroku-postbuild": "yarn build",
+    "build": "cd workspaces/server && yarn build",
+    "install": "cd workspaces/server && yarn",
+    "start:prod": "cd workspaces/server && yarn start:prod"
+  }
+}
