@@ -34,18 +34,18 @@ colorizeScene.on('message', async (ctx) => {
         return ctx.session.processing = false;
     }
 
-    if(ctx.session.processing) {
-        ctx.reply('Подождите пока завершится предыдущий запрос');
-        return
-    }
+    // if(ctx.session.processing) {
+    //     ctx.reply('Подождите пока завершится предыдущий запрос');
+    //     return
+    // }
 
     // await User.setProcessing(ctx.from.id)
 
     if(ctx.message.photo) {
-        ctx.session.processing = true;
+        // ctx.session.processing = true;
         ctx.reply('Выполняю, подождите пару минут...');
 
-        setTimeout(async () => {
+        // setTimeout(async () => {
             const lastImage = ctx.message.photo.pop();
             console.log('before getFileLink', lastImage.file_id);
             const fileLink = await ctx.telegram.getFileLink(lastImage.file_id);
@@ -59,8 +59,8 @@ colorizeScene.on('message', async (ctx) => {
                 colorized: data.colorized,
                 created_at: new Date()
             })
-            ctx.session.processing = false
-        }, 300)
+            // ctx.session.processing = false
+        // }, 300)
     }
 });
 
@@ -79,7 +79,7 @@ bot.use((...args) => session.middleware(...args));
 // bot.use(session());
 bot.use(stage.middleware());
 bot.command('start', async (ctx) => {
-    ctx.session.processing = false;
+    // ctx.session.processing = false;
     const {
         last_name,
         first_name,
@@ -106,5 +106,5 @@ export const init = () => {
         sessionName: 'session'
     });
     bot.startPolling();
-};
+}
 
