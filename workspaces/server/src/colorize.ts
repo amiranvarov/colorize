@@ -23,7 +23,7 @@ export async function start (imageURI) {
 
     await crateBaseDirectoryIfNotExist();
     const filePath = tempFilePath;
-    await s3.uploadToS3(filePath, newFileName, 'original');
+    const originalPhotoS3Path = await s3.uploadToS3(filePath, newFileName, 'original');
     console.log('original file uploaded to amazon');
     const uploadedfilePath = await uploadFile(filePath);
     console.log('file uploaded to Algorithmia data storage');
@@ -36,7 +36,10 @@ export async function start (imageURI) {
     console.log('Colorized file uploaded to S3');
     fs.unlinkSync(tempFilePath);
     // res.send('ok')
-    return colorizedPhotoURL;
+    return {
+        colorized: colorizedPhotoURL,
+        original: originalPhotoS3Path
+    };
 }
 
 

@@ -5,6 +5,8 @@ const { TelegrafMongoSession } = require('telegraf-session-mongodb');
 import * as Colorizer from '../colorize'
 
 import User from '../models/user'
+import Query from '../models/completed'
+import Log from '../models/log'
 import DB from '../db'
 
 let session;
@@ -43,7 +45,13 @@ colorizeScene.on('message', async (ctx) => {
         console.log('fileLink', fileLink);
         const data = await Colorizer.start(fileLink);
         console.log('LINK!!!', data);
-        ctx.replyWithPhoto(data)
+        ctx.replyWithPhoto(data.colorized)
+        await Query.create({
+            telegram_id: ctx.from.id,
+            original: data.original,
+            colorized: data.original,
+            created_at: new Date()
+        })
         // await User.setFree(ctx.from.id)
     }
 });
@@ -62,6 +70,12 @@ export const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use((...args) => session.middleware(...args));
 // bot.use(session());
 bot.use(stage.middleware());
+bot.on('message', (ctx) => {
+    Log.create({
+        telegram_id: ctx.from.id,
+        message: ctx.message
+    })
+});
 bot.command('start', async (ctx) => {
     ctx.session.processing = false;
     const {
