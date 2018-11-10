@@ -18,41 +18,49 @@ const greeter = new Scene('greeter');
 greeter.enter((ctx) => {
     ctx.reply(
     'Привет! Я бот Colorize, был создан что бы помочь ' +
-    'задать цвет вашим старым чёрно-белым фотографиям и добавить им немного жизни');
+    'добавить цвет и жизни вашим старым чёрно-белым фотографиям');
     ctx.scene.enter('colorize');
 });
 
 const colorizeScene = new Scene('colorize');
-colorizeScene.enter((ctx) => ctx.reply('Отправьте мне фотографию который хотите добавить цвет, я постараюсь дать им цвет'));
+colorizeScene.enter((ctx) => ctx.reply('Отправьте мне чёрно-белую фотографию...'));
 colorizeScene.on('message', async (ctx) => {
 
-    // if(ctx.message.text === '/start') {
-    //     return ctx.session.processing = false;
-    // }
+    Log.create({
+        telegram_id: ctx.from.id,
+        message: ctx.message
+    });
+    if(ctx.message.text === '/start') {
+        return ctx.session.processing = false;
+    }
 
-    // if(await User.isProcessing(ctx.from.id)) {
-    //     ctx.reply('Подождите пока завершится предыдущий запрос');
-    //     return
-    // }
+    if(ctx.session.processing) {
+        ctx.reply('Подождите пока завершится предыдущий запрос');
+        return
+    }
 
     // await User.setProcessing(ctx.from.id)
 
     if(ctx.message.photo) {
-        ctx.reply('Выполняю, подождите пару минут...')
-        const lastImage = ctx.message.photo.pop();
-        console.log('before getFileLink', lastImage.file_id);
-        const fileLink = await ctx.telegram.getFileLink(lastImage.file_id);
-        console.log('fileLink', fileLink);
-        const data = await Colorizer.start(fileLink);
-        console.log('LINK!!!', data);
-        ctx.replyWithPhoto(data.colorized)
-        await Query.create({
-            telegram_id: ctx.from.id,
-            original: data.original,
-            colorized: data.original,
-            created_at: new Date()
-        })
-        // await User.setFree(ctx.from.id)
+        ctx.session.processing = true;
+        ctx.reply('Выполняю, подождите пару минут...');
+
+        setTimeout(async () => {
+            const lastImage = ctx.message.photo.pop();
+            console.log('before getFileLink', lastImage.file_id);
+            const fileLink = await ctx.telegram.getFileLink(lastImage.file_id);
+            console.log('fileLink', fileLink);
+            const data = await Colorizer.start(fileLink);
+            console.log('LINK!!!', data);
+            ctx.replyWithPhoto(data.colorized)
+            await Query.create({
+                telegram_id: ctx.from.id,
+                original: data.original,
+                colorized: data.colorized,
+                created_at: new Date()
+            })
+            ctx.session.processing = false
+        }, 300)
     }
 });
 
@@ -70,12 +78,6 @@ export const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use((...args) => session.middleware(...args));
 // bot.use(session());
 bot.use(stage.middleware());
-bot.on('message', (ctx) => {
-    Log.create({
-        telegram_id: ctx.from.id,
-        message: ctx.message
-    })
-});
 bot.command('start', async (ctx) => {
     ctx.session.processing = false;
     const {

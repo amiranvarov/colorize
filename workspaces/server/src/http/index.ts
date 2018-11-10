@@ -10,7 +10,7 @@ export async function start () {
     express()
         .use(bodyParser.json())
         .get('/test', (req, res) => res.send('hello world  sss'))
-        .get('/upload', Colorize.start)
+        // .get('/upload', Colorize.start)
 
 
         .listen(PORT, () => console.log(`HTTP Server listenning on ${ PORT }`));
